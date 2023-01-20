@@ -30,7 +30,7 @@ const timberGuyLeft = {
         );
     }
 };
-
+  
 const timberGuyRight = {
     spriteX: 117,
     spriteY: 0,
