@@ -1,5 +1,5 @@
 body {
-    min-height: 100vh;
+    min-height: 97vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -7,6 +7,6 @@ body {
 
 canvas {
     border: 1px solid black;
-    display: block;
+    display: block;                               /*Minha Tela do Jogo*/
     margin: 0 auto;
 }

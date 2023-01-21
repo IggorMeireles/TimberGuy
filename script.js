@@ -4,10 +4,15 @@
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
+
 const sprites = new Image();
 sprites.src = './sprites.png';
 const fundo = new Image();
-fundo.src = './fundo.jpg';
+fundo.src = './fundo.png';
+const startScreen = new Image();
+startScreen.src = './startScreen.png';
+const letreiroInicio = new Image();
+letreiroInicio.src = './letreiroInicio.png';
 
 //
 // [Objetos]
@@ -30,7 +35,6 @@ const timberGuyLeft = {
         );
     }
 };
-   
 
 const timberGuyRight = {
     spriteX: 117,
@@ -105,8 +109,8 @@ const tree3 = {
 };
 
 const backgroundImage = {
-    spriteX: 140,
-    spriteY: 120,
+    spriteX: 771,
+    spriteY: 55,
     largura: 320,
     altura: 480,
     x: 0,
@@ -122,6 +126,47 @@ const backgroundImage = {
     }
 };
 
+const getReady = {
+    spriteX: 0,
+    spriteY: 1,
+    largura: 366,
+    altura: 527,
+    x: 40,
+    y: 0,
+    desenha() {
+        ctx.drawImage(
+            startScreen,
+            getReady.spriteX, getReady.spriteY,
+            getReady.largura, getReady.altura,
+            getReady.x, getReady.y,
+            235, 330,
+        );
+    }
+};
+
+const letreiroCmc = {
+    spriteX: 31,
+    spriteY: 32,
+    largura: 535,
+    altura: 181,
+    x: 47,
+    y: 170,
+    desenha() {
+        ctx.drawImage(
+            letreiroInicio,
+            letreiroCmc.spriteX, letreiroCmc.spriteY,
+            letreiroCmc.largura, letreiroCmc.altura,
+            letreiroCmc.x, letreiroCmc.y,
+            221, 80,
+        );
+    }
+};
+
+//
+// [TELAS]
+//
+
+
 const loop = () => {
     backgroundImage.desenha();
     tree.desenha();
@@ -132,5 +177,22 @@ const loop = () => {
     requestAnimationFrame(loop);
 };
 
+window.onload = () => {
+    backgroundImage.desenha();
+    tree.desenha();
+    tree2.desenha();
+    tree3.desenha();
+    timberGuyLeft.desenha();
+    getReady.desenha();
+    letreiroCmc.desenha();
 
-loop();
+//
+// [Event Listeners]
+//
+
+    window.addEventListener('keydown', (e) => {
+        if(e.code == 'ArrowDown') {
+            loop();
+        }
+    })
+};
