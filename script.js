@@ -36,6 +36,24 @@ const timberGuyLeft = {
     }
 };
 
+const timberGuyLeftAttack = {
+    spriteX: 0,
+    spriteY: 110,
+    largura: 94,
+    altura: 76,
+    x: 39,
+    y: 405,
+    desenha() {
+        ctx.drawImage(
+            sprites,
+            timberGuyLeftAttack.spriteX, timberGuyLeftAttack.spriteY,
+            timberGuyLeftAttack.largura, timberGuyLeftAttack.altura,
+            timberGuyLeftAttack.x, timberGuyLeftAttack.y,
+            timberGuyLeftAttack.largura, timberGuyLeftAttack.altura,
+        );
+    }
+};
+
 const timberGuyRight = {
     spriteX: 117,
     spriteY: 0,
@@ -54,12 +72,30 @@ const timberGuyRight = {
     }
 };
 
+const timberGuyRightAttack = {
+    spriteX: 107,
+    spriteY: 110,
+    largura: 94,
+    altura: 76,
+    x: 190,
+    y: 405,
+    desenha() {
+        ctx.drawImage(
+            sprites,
+            timberGuyRightAttack.spriteX, timberGuyRightAttack.spriteY,
+            timberGuyRightAttack.largura, timberGuyRightAttack.altura,
+            timberGuyRightAttack.x, timberGuyRightAttack.y,
+            timberGuyRightAttack.largura, timberGuyRightAttack.altura,
+        );
+    }
+};
+
 const tree = {
     spriteX: 0,
     spriteY: 254,
     largura: 73,
     altura: 53,
-    x: 125,
+    x: 123,
     y: 427,
     desenha() {
         ctx.drawImage(
@@ -77,7 +113,7 @@ const tree2 = {
     spriteY: 254,
     largura: 73,
     altura: 53,
-    x: 125,
+    x: 123,
     y: 374,
     desenha() {
         ctx.drawImage(
@@ -95,7 +131,7 @@ const tree3 = {
     spriteY: 254,
     largura: 73,
     altura: 53,
-    x: 125,
+    x: 123,
     y: 321,
     desenha() {
         ctx.drawImage(
@@ -145,12 +181,12 @@ const getReady = {
 };
 
 const letreiroCmc = {
-    spriteX: 31,
-    spriteY: 32,
-    largura: 535,
-    altura: 181,
+    spriteX: 34,
+    spriteY: 35,
+    largura: 524,
+    altura: 241,
     x: 47,
-    y: 170,
+    y: 175,
     desenha() {
         ctx.drawImage(
             letreiroInicio,
@@ -166,33 +202,87 @@ const letreiroCmc = {
 // [TELAS]
 //
 
+let indexTela;
+let telaMostrada = {};
+let timberGuy = timberGuyLeft;
+
+const mudaTela = (novaTela) => {
+    telaMostrada = novaTela;                   // [Função para mudar de tela]
+};
+
+const telas = {
+    INICIO: {
+        desenha() {
+            backgroundImage.desenha();
+            tree.desenha();
+            tree2.desenha();
+            tree3.desenha();
+            timberGuy.desenha();
+            getReady.desenha();
+            letreiroCmc.desenha();
+            indexTela = 'telaInicio';
+        }
+    },
+
+    JOGO: {
+        desenha() {
+            backgroundImage.desenha();
+            tree.desenha();
+            tree2.desenha();
+            tree3.desenha();
+            timberGuy.desenha();
+            indexTela = 'telaJogo';
+        }
+    }
+};
 
 const loop = () => {
-    backgroundImage.desenha();
-    tree.desenha();
-    tree2.desenha();
-    tree3.desenha();
-    timberGuyRight.desenha();
-    timberGuyLeft.desenha();
+    telaMostrada.desenha();
+
     requestAnimationFrame(loop);
 };
 
 window.onload = () => {
-    backgroundImage.desenha();
-    tree.desenha();
-    tree2.desenha();
-    tree3.desenha();
-    timberGuyLeft.desenha();
-    getReady.desenha();
-    letreiroCmc.desenha();
+    mudaTela(telas.INICIO);
+    loop();
 
-//
-// [Event Listeners]
-//
+    //
+    // [Event Listeners]
+    //
 
     window.addEventListener('keydown', (e) => {
-        if(e.code == 'ArrowDown') {
-            loop();
-        }
-    })
+        if (indexTela == 'telaInicio') {
+            if (e.code == 'Space') {
+                mudaTela(telas.JOGO);
+            };
+        };
+        if (indexTela == 'telaJogo') {
+            if (e.code == 'ArrowRight') {
+                if (timberGuy == timberGuyLeft) {
+                    timberGuy = timberGuyRightAttack;
+                    setTimeout(()=>{
+                        timberGuy = timberGuyRight;
+                    }, 150);
+                } else if (timberGuy == timberGuyRight) {
+                    timberGuy = timberGuyRightAttack;
+                    setTimeout(()=>{
+                        timberGuy = timberGuyRight;
+                    }, 150);
+                };
+            };
+            if (e.code == 'ArrowLeft') {
+                if (timberGuy == timberGuyRight) {
+                    timberGuy = timberGuyLeftAttack;
+                    setTimeout(()=>{
+                        timberGuy = timberGuyLeft;
+                    }, 150);
+                } else if (timberGuy == timberGuyLeft) {
+                    timberGuy = timberGuyLeftAttack;
+                    setTimeout(()=>{
+                        timberGuy = timberGuyLeft;
+                    }, 150);
+                }
+            }
+        };
+    });
 };
