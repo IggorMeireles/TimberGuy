@@ -238,6 +238,24 @@ const letreiroCmc = {
     }
 };
 
+const gameOverScreen = {
+    spriteX: 170,
+    spriteY: 266,
+    largura: 148,
+    altura: 214,
+    x: 40,
+    y: 0,
+    desenha() {
+        ctx.drawImage(
+            sprites,
+            gameOverScreen.spriteX, gameOverScreen.spriteY,
+            gameOverScreen.largura, gameOverScreen.altura,
+            gameOverScreen.x, gameOverScreen.y,
+            235, 330,
+        )
+    }
+};
+
 //
 // [TELAS]
 //
@@ -271,6 +289,15 @@ const telas = {
             indexTela = 'telaJogo';
             printTronco();
         }
+    },
+
+    GameOver: {
+        desenha() {
+            backgroundImage.desenha();
+            timberGuy.desenha();
+            printTronco();
+            gameOverScreen.desenha();
+        }
     }
 };
 
@@ -281,24 +308,24 @@ const telas = {
 
 const varTroncos = [0, 0, 0, 1, 1, 2, 2];
 let troncoPick;
-let troncosInit = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let troncos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let troncoDaVez;
 
 const addTroncoInit = () => {
-    for (let i = 2; i < troncosInit.length; i++) {
+    for (let i = 2; i < troncos.length; i++) {
         let troncoRandom = Math.trunc(Math.random() * 10);
-        if (troncoRandom < 3 && troncosInit[i - 1] == 0) {
+        if (troncoRandom < 3 && troncos[i - 1] == 0) {
             troncoPick = 1;
-            troncosInit[i] = troncoPick;
-        } else if (troncoRandom > 3 && troncoRandom < 6 && troncosInit[i - 1] == 0) {
+            troncos[i] = troncoPick;
+        } else if (troncoRandom > 3 && troncoRandom < 6 && troncos[i - 1] == 0) {
             troncoPick = 2;
-            troncosInit[i] = troncoPick;
+            troncos[i] = troncoPick;
         } else if (troncoRandom > 6) {
             troncoPick = 0;
-            troncosInit[i] = troncoPick;
+            troncos[i] = troncoPick;
         };
     };
-    console.log(troncosInit);
+    console.log(troncos);
 };
 
 function desenhaTronco(foto, sx, sy, sw, sh, dx, dy, dw, dh) {
@@ -312,30 +339,54 @@ function desenhaTronco(foto, sx, sy, sw, sh, dx, dy, dw, dh) {
 };
 
 const mudaTronco = () => {
-    let troncoRandom = (troncosInit[troncosInit.length - 1] == 1 || troncosInit[troncosInit.length - 1] == 2) ? 0 :
+    let troncoRandom = (troncos[troncos.length - 1] == 1 || troncos[troncos.length - 1] == 2) ? 0 :
         Math.floor(Math.random() * 3);
-    for (let i = 0; i < troncosInit.length; i++) {
-        if (i <= troncosInit.length - 2) {
-            troncosInit[i] = troncosInit[i + 1];
+    for (let i = 0; i < troncos.length; i++) {
+        if (i <= troncos.length - 2) {
+            troncos[i] = troncos[i + 1];
         } else {
-            troncosInit[i] = troncoRandom;
+            troncos[i] = troncoRandom;
         }
     };
 };
 
 const printTronco = () => {
     let alturaTronco = 427;
-    for (let i = 0; i < troncosInit.length; i++) {
-        if (troncosInit[i] == 0) {
+    for (let i = 0; i < troncos.length; i++) {
+        if (troncos[i] == 0) {
             desenhaTronco(sprites, 0, 254, 73, 53, 123, alturaTronco, 73, 53);
             alturaTronco = alturaTronco - 53;
-        } else if (troncosInit[i] == 1) {
+        } else if (troncos[i] == 1) {
             desenhaTronco(sprites, 0, 405, 167, 59, 29, alturaTronco, 167, 53);
             alturaTronco = alturaTronco - 53;
-        } else if (troncosInit[i] == 2) {
+        } else if (troncos[i] == 2) {
             desenhaTronco(sprites, 0, 319, 167, 60, 123, alturaTronco, 167, 53);
             alturaTronco = alturaTronco - 53;
         };
+    };
+};
+
+//
+// [COLISÃO]
+//
+
+const testaColisao = (position) => {
+    if (position == 1) {
+        if (troncos[1] == 1) {
+            telaMostrada = telas.GameOver;
+            indexTela = 'gameOver';
+        } else if (troncos[0] == 1) {
+            telaMostrada = telas.GameOver;
+            indexTela = 'gameOver';
+        }
+    } else {
+        if (troncos[1] == 2) {
+            telaMostrada = telas.GameOver;
+            indexTela = 'gameOver';
+        } else if (troncos[0] == 2) {
+            telaMostrada = telas.GameOver;
+            indexTela = 'gameOver';
+        }
     };
 };
 
@@ -375,7 +426,7 @@ window.onload = () => {
                     }, 100);
                 };
                 mudaTronco();
-                console.log(troncosInit);
+                testaColisao(2);
             };
             if (e.code == 'ArrowLeft') {
                 if (timberGuy == timberGuyRight) {
@@ -390,8 +441,17 @@ window.onload = () => {
                     }, 100);
                 }
                 mudaTronco();
-                console.log(troncosInit);
+                testaColisao(1);
             }
+        };
+        if (indexTela == 'gameOver') {
+            if (e.code == 'Space') {
+                mudaTela(telas.JOGO);
+                troncos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                timberGuy = timberGuyLeft;
+                addTroncoInit();
+                printTronco();
+            };
         };
     });
 };
