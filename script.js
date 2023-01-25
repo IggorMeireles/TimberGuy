@@ -14,6 +14,8 @@ startScreen.src = './startScreen.png';
 const letreiroInicio = new Image();
 letreiroInicio.src = './letreiroInicio.png';
 
+let alturaTronco = 268;
+
 //
 // [Objetos]
 //
@@ -144,6 +146,44 @@ const tree3 = {
     }
 };
 
+const treeBranchLeft = {
+    spriteX: 0,
+    spriteY: 404,
+    largura: 167,
+    altura: 60,
+    x: 29,
+    y: alturaTronco,
+    desenha() {
+        ctx.drawImage(
+            sprites,
+            treeBranchLeft.spriteX, treeBranchLeft.spriteY,
+            treeBranchLeft.largura, treeBranchLeft.altura,
+            treeBranchLeft.x, treeBranchLeft.y,
+            treeBranchLeft.largura, 53,
+        );
+        alturaTronco = alturaTronco - 53;
+    }
+};
+
+const treeBranchRight = {
+    spriteX: 0,
+    spriteY: 319,
+    largura: 167,
+    altura: 60,
+    x: 123,
+    y: alturaTronco,
+    desenha() {
+        ctx.drawImage(
+            sprites,
+            treeBranchRight.spriteX, treeBranchRight.spriteY,
+            treeBranchRight.largura, treeBranchRight.altura,
+            treeBranchRight.x, treeBranchRight.y,
+            treeBranchRight.largura, 53,
+        );
+        alturaTronco = alturaTronco - 53;
+    }
+};
+
 const backgroundImage = {
     spriteX: 771,
     spriteY: 55,
@@ -187,7 +227,7 @@ const letreiroCmc = {
     altura: 241,
     x: 47,
     y: 175,
-    desenha() {
+    desenha() {                                                 //"aperte espaço para inciar"
         ctx.drawImage(
             letreiroInicio,
             letreiroCmc.spriteX, letreiroCmc.spriteY,
@@ -227,13 +267,76 @@ const telas = {
     JOGO: {
         desenha() {
             backgroundImage.desenha();
-            tree.desenha();
-            tree2.desenha();
-            tree3.desenha();
             timberGuy.desenha();
             indexTela = 'telaJogo';
+            printTronco();
         }
     }
+};
+
+
+//
+//  [TRONCO]
+//
+
+const varTroncos = [0, 0, 0, 1, 1, 2, 2];
+let troncoPick;
+let troncosInit = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let troncoDaVez;
+
+const addTroncoInit = () => {
+    for (let i = 2; i < troncosInit.length; i++) {
+        let troncoRandom = Math.trunc(Math.random() * 10);
+        if (troncoRandom < 3 && troncosInit[i - 1] == 0) {
+            troncoPick = 1;
+            troncosInit[i] = troncoPick;
+        } else if (troncoRandom > 3 && troncoRandom < 6 && troncosInit[i - 1] == 0) {
+            troncoPick = 2;
+            troncosInit[i] = troncoPick;
+        } else if (troncoRandom > 6) {
+            troncoPick = 0;
+            troncosInit[i] = troncoPick;
+        };
+    };
+    console.log(troncosInit);
+};
+
+function desenhaTronco(foto, sx, sy, sw, sh, dx, dy, dw, dh) {
+    ctx.drawImage(
+        foto,
+        sx, sy,
+        sw, sh,
+        dx, dy,
+        dw, dh,
+    )
+};
+
+const mudaTronco = () => {
+    let troncoRandom = (troncosInit[troncosInit.length - 1] == 1 || troncosInit[troncosInit.length - 1] == 2) ? 0 :
+        Math.floor(Math.random() * 3);
+    for (let i = 0; i < troncosInit.length; i++) {
+        if (i <= troncosInit.length - 2) {
+            troncosInit[i] = troncosInit[i + 1];
+        } else {
+            troncosInit[i] = troncoRandom;
+        }
+    };
+};
+
+const printTronco = () => {
+    let alturaTronco = 427;
+    for (let i = 0; i < troncosInit.length; i++) {
+        if (troncosInit[i] == 0) {
+            desenhaTronco(sprites, 0, 254, 73, 53, 123, alturaTronco, 73, 53);
+            alturaTronco = alturaTronco - 53;
+        } else if (troncosInit[i] == 1) {
+            desenhaTronco(sprites, 0, 405, 167, 59, 29, alturaTronco, 167, 53);
+            alturaTronco = alturaTronco - 53;
+        } else if (troncosInit[i] == 2) {
+            desenhaTronco(sprites, 0, 319, 167, 60, 123, alturaTronco, 167, 53);
+            alturaTronco = alturaTronco - 53;
+        };
+    };
 };
 
 const loop = () => {
@@ -254,34 +357,40 @@ window.onload = () => {
         if (indexTela == 'telaInicio') {
             if (e.code == 'Space') {
                 mudaTela(telas.JOGO);
+                addTroncoInit();
+                printTronco();
             };
         };
         if (indexTela == 'telaJogo') {
             if (e.code == 'ArrowRight') {
                 if (timberGuy == timberGuyLeft) {
                     timberGuy = timberGuyRightAttack;
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         timberGuy = timberGuyRight;
-                    }, 150);
+                    }, 100);
                 } else if (timberGuy == timberGuyRight) {
                     timberGuy = timberGuyRightAttack;
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         timberGuy = timberGuyRight;
-                    }, 150);
+                    }, 100);
                 };
+                mudaTronco();
+                console.log(troncosInit);
             };
             if (e.code == 'ArrowLeft') {
                 if (timberGuy == timberGuyRight) {
                     timberGuy = timberGuyLeftAttack;
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         timberGuy = timberGuyLeft;
-                    }, 150);
+                    }, 100);
                 } else if (timberGuy == timberGuyLeft) {
                     timberGuy = timberGuyLeftAttack;
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         timberGuy = timberGuyLeft;
-                    }, 150);
+                    }, 100);
                 }
+                mudaTronco();
+                console.log(troncosInit);
             }
         };
     });
