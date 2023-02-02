@@ -256,6 +256,13 @@ const gameOverScreen = {
     }
 };
 
+// 
+// [PONTOS]
+//
+
+let pontos = 0;
+let highScoreSession = 0;
+
 //
 // [TELAS]
 //
@@ -285,18 +292,55 @@ const telas = {
     JOGO: {
         desenha() {
             backgroundImage.desenha();
-            timberGuy.desenha();
             indexTela = 'telaJogo';
             printTronco();
+            timberGuy.desenha();
+            ctx.font = '30px System';
+            ctx.fillStyle = '#000005';
+            let xDoPonto;
+            if (pontos < 10) {
+                xDoPonto = 150;
+            } else if (pontos >= 10 && pontos < 100) {
+                xDoPonto = 141;
+            } else if (pontos >= 100 && pontos < 1000) {
+                xDoPonto = 132;
+            };
+            ctx.fillText(pontos, xDoPonto, 100);
         }
     },
 
     GameOver: {
         desenha() {
+            let highScore = localStorage.getItem('highScore');
             backgroundImage.desenha();
             timberGuy.desenha();
             printTronco();
             gameOverScreen.desenha();
+            ctx.font = '30px ink free';
+            ctx.fillStyle = '#000005';
+            if (pontos > highScoreSession) {
+                highScoreSession = pontos;
+                if (highScoreSession > highScore) {
+                    localStorage.setItem('highScore', highScoreSession);
+                }
+            };
+            let xDoPonto;
+            if (highScore < 10) {
+                xDoPonto = 150;
+            } else if (highScore >= 10 && highScore < 100) {
+                xDoPonto = 141;
+            } else if (highScore >= 100 && highScore < 1000) {
+                xDoPonto = 132;
+            };
+            ctx.fillText(highScore, xDoPonto, 215);
+            if (pontos < 10) {
+                xDoPonto = 150;
+            } else if (pontos >= 10 && pontos < 100) {
+                xDoPonto = 141;
+            } else if (pontos >= 100 && pontos < 1000) {
+                xDoPonto = 132;
+            };
+            ctx.fillText(pontos, xDoPonto, 280);
         }
     }
 };
@@ -427,6 +471,7 @@ window.onload = () => {
                 };
                 mudaTronco();
                 testaColisao(2);
+                pontos++;
             };
             if (e.code == 'ArrowLeft') {
                 if (timberGuy == timberGuyRight) {
@@ -442,6 +487,7 @@ window.onload = () => {
                 }
                 mudaTronco();
                 testaColisao(1);
+                pontos++;
             }
         };
         if (indexTela == 'gameOver') {
@@ -451,6 +497,7 @@ window.onload = () => {
                 timberGuy = timberGuyLeft;
                 addTroncoInit();
                 printTronco();
+                pontos = 0;
             };
         };
     });
