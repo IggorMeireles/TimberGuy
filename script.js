@@ -256,12 +256,39 @@ const gameOverScreen = {
     }
 };
 
+const timer = {
+    xwidth: 150,
+    velocidadeTimer: 0,
+    incrementoDaVelocidade: 0.001,
+    desenha() {
+        ctx.fillStyle = 'red';
+        ctx.fillRect(85, 120, timer.xwidth, 20);
+        ctx.strokeRect(85, 120, 150, 20);
+    },
+    atualiza() {
+        timer.velocidadeTimer = timer.velocidadeTimer + timer.incrementoDaVelocidade;
+        timer.xwidth = timer.xwidth - timer.velocidadeTimer;
+        if (timer.xwidth <= 0) {
+            telaMostrada = telas.GameOver;
+            indexTela = 'gameOver';
+            timer.xwidth = 150;
+            timer.velocidadeTimer = 0;
+        };
+    }
+};
+
 // 
 // [PONTOS]
 //
 
 let pontos = 0;
 let highScoreSession = 0;
+let addTimer = 20;
+
+const timerIncrement = () => {
+    timer.xwidth = (timer.xwidth + addTimer) > 150 ? (timer.xwidth = 150) : (timer.xwidth = timer.xwidth + addTimer);
+    timer.velocidadeTimer = (timer.velocidadeTimer - 0.01) < 0 ? (timer.velocidadeTimer = 0.025 ) : (timer.velocidadeTimer - 0.01);
+};
 
 //
 // [TELAS]
@@ -295,8 +322,10 @@ const telas = {
             indexTela = 'telaJogo';
             printTronco();
             timberGuy.desenha();
+            timer.desenha();
+            timer.atualiza();
             ctx.font = '30px System';
-            ctx.fillStyle = '#000005';
+            ctx.fillStyle = '#000005'; 
             let xDoPonto;
             if (pontos < 10) {
                 xDoPonto = 150;
@@ -306,6 +335,7 @@ const telas = {
                 xDoPonto = 132;
             };
             ctx.fillText(pontos, xDoPonto, 100);
+
         }
     },
 
@@ -419,24 +449,31 @@ const testaColisao = (position) => {
         if (troncos[1] == 1) {
             telaMostrada = telas.GameOver;
             indexTela = 'gameOver';
+            timer.xwidth = 150;
+            timer.velocidadeTimer = 0;
         } else if (troncos[0] == 1) {
             telaMostrada = telas.GameOver;
             indexTela = 'gameOver';
+            timer.xwidth = 150;
+            timer.velocidadeTimer = 0;
         }
     } else {
         if (troncos[1] == 2) {
             telaMostrada = telas.GameOver;
             indexTela = 'gameOver';
+            timer.xwidth = 150;
+            timer.velocidadeTimer = 0;
         } else if (troncos[0] == 2) {
             telaMostrada = telas.GameOver;
             indexTela = 'gameOver';
+            timer.xwidth = 150;
+            timer.velocidadeTimer = 0;
         }
     };
 };
 
 const loop = () => {
     telaMostrada.desenha();
-
     requestAnimationFrame(loop);
 };
 
@@ -472,6 +509,7 @@ window.onload = () => {
                 mudaTronco();
                 testaColisao(2);
                 pontos++;
+                timerIncrement();
             };
             if (e.code == 'ArrowLeft') {
                 if (timberGuy == timberGuyRight) {
@@ -488,6 +526,7 @@ window.onload = () => {
                 mudaTronco();
                 testaColisao(1);
                 pontos++;
+                timerIncrement();
             }
         };
         if (indexTela == 'gameOver') {
